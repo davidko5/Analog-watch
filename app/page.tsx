@@ -18,7 +18,7 @@ export default function Home() {
  * @param {Date} date - The date object to format
  * @returns {object} - An object { hour, minute, second }
  */
-const getTimeForTimeZone = (timeZone, date) => {
+const getTimeForTimeZone = (timeZone: string, date: Date) => {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: timeZone,
@@ -28,7 +28,7 @@ const getTimeForTimeZone = (timeZone, date) => {
       second: 'numeric',
     }).formatToParts(date);
 
-    const getValue = (type) => {
+    const getValue = (type: string) => {
       const part = parts.find((p) => p.type === type);
       return part ? parseInt(part.value) : 0;
     };
@@ -54,7 +54,19 @@ const getTimeForTimeZone = (timeZone, date) => {
  * The individual clock hand component.
  * It's a container that rotates, with the image positioned inside.
  */
-const Hand = ({ type, rotation, imgSrc = '', alt, isSecondHand = false }) => {
+const Hand = ({
+  type,
+  rotation,
+  imgSrc = '',
+  alt,
+  isSecondHand = false,
+}: {
+  type: string;
+  rotation: number;
+  imgSrc: string;
+  alt: string;
+  isSecondHand: boolean;
+}) => {
   let zIndex, handLength, colorFilter, offset;
 
   switch (type) {
@@ -141,12 +153,20 @@ const Hand = ({ type, rotation, imgSrc = '', alt, isSecondHand = false }) => {
  * The main Clock component
  */
 const Clock = () => {
-  const [time, setTime] = useState(new Date());
+  // const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState(() => {
+    const today = new Date();
+    // today.setHours(0, 0, 0, 0);
+    today.setSeconds(today.getSeconds() + 15, 0);
+    return today;
+  });
 
   useEffect(() => {
     // Update the time every second
     const intervalId = setInterval(() => {
-      setTime(new Date());
+      const today = new Date();
+today.setSeconds(today.getSeconds() + 15, 0);
+      setTime(today);
     }, 1000);
 
     // Clear interval on component unmount
@@ -197,24 +217,28 @@ const Clock = () => {
         rotation={cetHourRotation}
         imgSrc='hourCET.png'
         alt='Central Europe Hour Hand'
+        isSecondHand={false}
       />
       <Hand
         type='eet-hour'
         rotation={eetHourRotation}
         imgSrc='hourEET.png'
         alt='South Europe Hour Hand'
+        isSecondHand={false}
       />
       <Hand
         type='minute'
         rotation={minuteRotation}
         imgSrc='minute.png'
         alt='Minute Hand'
+        isSecondHand={false}
       />
       <Hand
         type='second'
         rotation={secondRotation}
         isSecondHand={true}
         alt='Second Hand'
+        imgSrc=''
       />
     </div>
   );
