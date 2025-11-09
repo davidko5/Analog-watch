@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function Home() {
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100 font-sans'>
+    <div className='flex min-h-screen items-center justify-center bg-white font-sans'>
       <Clock />
     </div>
   );
@@ -75,18 +75,18 @@ const Hand = ({
       handLength = '35%'; // 35% of clock diameter
       // colorFilter = 'invert(37%) sepia(93%) saturate(1352%) hue-rotate(184deg) brightness(99%) contrast(101%)'; // Blue
       colorFilter = ''; // Blue
-      offset = 30; // Offset for hour hands
+      offset = 0; // No offset - hand image starts at center
       break;
     case 'eet-hour':
       zIndex = 36;
       handLength = '35%'; // 28% of clock diameter - shorter
       // colorFilter = 'invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)'; // Green
       colorFilter = ''; // Green
-      offset = 30; // Same offset as CET hour hand
+      offset = 0; // No offset - hand image starts at center
       break;
     case 'second':
       zIndex = 40;
-      handLength = '42%'; // Longer for visibility
+      handLength = '35%'; // Longer for visibility
       colorFilter = '';
       offset = 0;
       break;
@@ -96,7 +96,7 @@ const Hand = ({
       handLength = '40%'; // 40% of clock diameter
       // colorFilter = 'invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)'; // Red
       colorFilter = ''; // Red
-      offset = 17.5; // Different offset for minute hand
+      offset = 0; // No offset - hand image starts at center
       break;
   }
 
@@ -125,7 +125,7 @@ const Hand = ({
     <div
       className='absolute flex items-center'
       style={{
-        width: handLength,
+        // width: handLength,
         height: '50px',
         top: '50%',
         left: '50%',
@@ -204,10 +204,15 @@ today.setSeconds(today.getSeconds() + 15, 0);
     ((eetTime.hour % 12) / 12) * 360 + (minute / 60) * 30 + CSS_OFFSET;
 
   return (
-    <div
-      className='relative w-[90vw] max-w-sm aspect-square bg-cover bg-center rounded-full shadow-2xl'
-      style={{ backgroundImage: "url('dial.png')" }}
-    >
+    <div className='relative'>
+      <video
+        src='/face-animation.mov'
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ width: '1024px', height: 'auto'}}
+      />
       {/* The center pivot dot */}
       <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-black rounded-full z-50'></div>
 
