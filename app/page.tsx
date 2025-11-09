@@ -2,10 +2,84 @@
 
 import { useState, useEffect } from 'react';
 
+// Type extensions for webkit fullscreen API
+interface DocumentWithWebkit extends Document {
+  webkitExitFullscreen?: () => Promise<void>;
+  webkitFullscreenElement?: Element;
+}
+
+interface HTMLElementWithWebkit extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+}
+
 export default function Home() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    // Listen for fullscreen changes (user can exit with ESC)
+    const handleFullscreenChange = () => {
+      const doc = document as DocumentWithWebkit;
+      setIsFullscreen(!!(document.fullscreenElement || doc.webkitFullscreenElement));
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      const doc = document as DocumentWithWebkit;
+      const docElement = document.documentElement as HTMLElementWithWebkit;
+      
+      if (!document.fullscreenElement && !doc.webkitFullscreenElement) {
+        // Enter fullscreen
+        if (docElement.requestFullscreen) {
+          await docElement.requestFullscreen();
+        } else if (docElement.webkitRequestFullscreen) {
+          // Safari
+          await docElement.webkitRequestFullscreen();
+        }
+      } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling fullscreen:', err);
+    }
+  };
+
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white font-sans'>
+    <div className='flex min-h-screen items-center justify-center bg-white font-sans relative'>
       <Clock />
+      
+      {/* Fullscreen Toggle Button */}
+      <button
+        onClick={toggleFullscreen}
+        className='fixed top-4 right-4 p-3 bg-gray-800 hover:bg-gray-700 text-white rounded-full shadow-lg transition-all duration-200 z-50 opacity-70 hover:opacity-100'
+        title={isFullscreen ? 'Exit Fullscreen (ESC)' : 'Enter Fullscreen'}
+        aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+      >
+        {isFullscreen ? (
+          // Exit fullscreen icon
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+          </svg>
+        ) : (
+          // Enter fullscreen icon
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        )}
+      </button>
     </div>
   );
 }
