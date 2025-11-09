@@ -138,7 +138,7 @@ const Hand = ({
         src={imgSrc}
         alt={alt}
         style={{
-          width: '100%',
+          // width: '100%',
           height: 'auto',
           maxHeight: '100%',
           objectFit: 'contain',
@@ -165,7 +165,7 @@ const Clock = () => {
     // Update the time every second
     const intervalId = setInterval(() => {
       const today = new Date();
-today.setSeconds(today.getSeconds() + 15, 0);
+      today.setSeconds(today.getSeconds() + 15, 0);
       setTime(today);
     }, 1000);
 
@@ -211,7 +211,7 @@ today.setSeconds(today.getSeconds() + 15, 0);
         loop
         muted
         playsInline
-        style={{ width: '1024px', height: 'auto'}}
+        style={{ width: '1024px', height: 'auto' }}
       />
       {/* The center pivot dot */}
       <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-black rounded-full z-50'></div>
